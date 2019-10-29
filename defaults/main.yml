@@ -1,0 +1,8 @@
+---
+# defaults file for csync2
+csync2_groupname: default_group
+csync2_backup_path: /var/backups/csync2
+csync2_backup_generations: 2
+csync2_hosts: []
+csync2_includes_path: []
+csync2_excludes_path: []

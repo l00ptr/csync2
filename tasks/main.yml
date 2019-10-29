@@ -1,0 +1,29 @@
+---
+# tasks file for csync2
+- name: Install csync2 package
+  apt:
+    name: csyn2
+    state: present
+
+- name: Create config
+  template:
+    src: etc/csync2.conf.j2
+    dest: /etc/csync2.conf
+
+- name: Generate an csync2 private key
+  openssl_privatekey:
+    path: /etc/ssl/private/csync2.key
+
+- name: Generate the CSR file signed with the private key
+  openssl_csr:
+    path: /etc/ssl/certs/csync.csr
+    privatekey_path: /etc/ssl/private/csync2.key
+    common_name: "{{ ansible_hostname }}"
+#   privatekey_passphrase: "{{ private_key_password }}"
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: /etc/ssl/certs/csync2.crt
+    privatekey_path: /etc/ssl/private/csync2.key
+    csr_path: /etc/ssl/certs/csync2.crt
+    provider: selfsigned

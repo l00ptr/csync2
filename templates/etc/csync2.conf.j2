@@ -1,0 +1,54 @@
+group {{ csync2_groupname }}
+{
+  {% for a_host in csync2_hosts %}
+    {% if (a_host.is_slave|default(false)) %}
+#       host ({{a_host.name}});
+    {% else %}
+#       host {{a_host.name}};
+    {% endif %}
+  {% endfor %}
+#
+#       key /etc/csync2.key_mygroup;
+#
+#       #
+#       # WARNING:
+#       # You CANNOT use paths containing a symlink
+#       # component in include/exclude options!
+#       #
+#       # Here is a real-life example:
+#       # Suppose you have some 64bit Linux systems
+#       # and /usr/lib/ocf is what you want to keep
+#       # in sync. On 64bit Linux systems, /usr/lib
+#       # is usually a symlink to /usr/lib64.
+#       # This does not work:
+#       #   include /usr/lib/ocf;
+#       # But this does work:
+#       #   include /usr/lib64/ocf;
+#       #
+#
+{% for a_synced_path in csync2_includes_path %}
+        include {{ a_synced_path }};
+{% endfor %}
+{% for a_excluded_path in csync2_excludes_path %}
+        exclude {{ a_excluded_path }};
+{% endfor %}
+#
+#       action
+#       {
+#               pattern /etc/apache/httpd.conf;
+#               pattern /etc/apache/sites-available/*;
+#               exec "/usr/sbin/apache2ctl graceful";
+#               logfile "/var/log/csync2_action.log";
+#               do-local;
+#               # you can use do-local-only if the execution
+#               # should be done locally only
+#               # do-local-only;
+#       }
+#
+       # The backup-directory needs to be created first!
+       backup-directory {{ csync2_backup_path }};
+       backup-generations {{ csync2_backup_generations}};
+#
+#       auto none;
+}
+
